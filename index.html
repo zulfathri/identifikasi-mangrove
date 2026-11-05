@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1F6447">
+<meta name="description" content="Kunci identifikasi mangrove sejati Indonesia untuk mahasiswa, dosen, dan surveyor. Bisa dipakai tanpa sinyal.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Kunci Identifikasi Mangrove Sejati</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;1,8..60,400;1,8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+/* Layout: alat lapangan — panel ciri (kiri) + daftar kandidat (kanan, lengket); di HP bertumpuk dengan bilah hasil di bawah */
+:root{
+  --bg:#F1F4F1; --surface:#FFFFFF; --sunk:#E5EBE6; --line:#CBD5CD;
+  --ink:#16231E; --muted:#56655D; --accent:#1F6447; --accent-ink:#FFFFFF; --accent-soft:#D7E8DD;
+  --mud:#7A5233; --flag:#F6E3B0; --flag-ink:#6A4A06; --warn:#9B3B22;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-sci:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1714; --surface:#16211C; --sunk:#1D2A24; --line:#2E3E36;
+  --ink:#E4ECE7; --muted:#9AAAA1; --accent:#6CC197; --accent-ink:#0B1A13; --accent-soft:#1F3A2D;
+  --mud:#C9946A; --flag:#4A3B12; --flag-ink:#F2D58A; --warn:#E58A6E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1714; --surface:#16211C; --sunk:#1D2A24; --line:#2E3E36;
+  --ink:#E4ECE7; --muted:#9AAAA1; --accent:#6CC197; --accent-ink:#0B1A13; --accent-soft:#1F3A2D;
+  --mud:#C9946A; --flag:#4A3B12; --flag-ink:#F2D58A; --warn:#E58A6E; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-block:10px}
+.brand{display:flex;flex-direction:column;line-height:1.15;margin-right:auto}
+.brand b{font-family:var(--f-sci);font-weight:600;font-size:1.25rem;letter-spacing:.005em}
+.brand span{font-size:.78rem;color:var(--muted)}
+nav.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:999px}
+nav.tabs a{padding:6px 14px;border-radius:999px;color:var(--muted);text-decoration:none;font-weight:700;font-size:.9rem;white-space:nowrap}
+nav.tabs a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+nav.tabs a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+main{padding-block:20px 120px}
+.sci{font-family:var(--f-sci);font-style:italic}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.88rem}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* Centang ciri */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.hint{background:var(--accent-soft);border-radius:var(--r);padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-bottom:16px;font-size:.92rem}
+.hint button{border:0;background:var(--surface);border-radius:999px;padding:3px 11px;font-weight:700;font-size:.85rem;color:var(--accent)}
+details.organ{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px}
+details.organ>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:10px;font-weight:700}
+details.organ>summary::-webkit-details-marker{display:none}
+details.organ>summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+details.organ[open]>summary::after{transform:rotate(-135deg)}
+.count-pill{font-size:.75rem;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:1px 8px}
+.organ-body{padding:2px 16px 14px;display:flex;flex-direction:column;gap:16px}
+.char-h{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.char-h h3{margin:0;font-size:.95rem}
+.info{border:1px solid var(--line);background:none;border-radius:999px;width:22px;height:22px;font-size:.75rem;line-height:1;color:var(--muted);flex:none;padding:0}
+.ket{font-size:.85rem;color:var(--muted);margin:0 0 8px;max-width:65ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 10px;font-size:.88rem;min-height:36px}
+.chip svg{width:34px;height:30px;flex:none;color:var(--mud)}
+.chip .n{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip[aria-pressed="true"] svg,.chip[aria-pressed="true"] .n{color:var(--accent-ink)}
+.chip.zero{opacity:.45}
+.numrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.numrow input{width:110px;font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+
+/* Hasil */
+aside.res{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);max-height:calc(100vh - 100px);overflow:auto}
+@media (max-width:860px){aside.res{position:static;max-height:none}}
+.res-head{padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface)}
+.res-head .big{font-family:var(--f-sci);font-weight:600;font-size:1.6rem;line-height:1}
+.res-sec{padding:8px 0}
+.res-sec h4{margin:4px 16px 4px;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.cand{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;border:0;background:none;padding:8px 16px;border-top:1px solid var(--sunk)}
+.cand:hover{background:var(--sunk)}
+.cand .nm{flex:1;min-width:0}
+.cand .nm i{font-family:var(--f-sci);font-size:1.02rem}
+.cand .nm small{display:block;color:var(--muted);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{font-size:.7rem;border-radius:4px;padding:1px 6px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.tag.off{background:var(--flag);color:var(--flag-ink)}
+.empty{padding:16px;color:var(--muted);font-size:.9rem}
+.mobilebar{display:none}
+@media (max-width:860px){.mobilebar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:6;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--surface);border-top:1px solid var(--line);align-items:center;gap:12px}}
+.mobilebar b{font-family:var(--f-sci);font-size:1.3rem}
+
+/* Tanya-jawab */
+.qa{max-width:720px;margin:0 auto}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.qcard h2{font-family:var(--f-sci);font-weight:600;font-size:1.5rem;margin:4px 0 6px;text-wrap:balance}
+.qopts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:14px}
+.qopt{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;font-weight:700}
+.qopt svg{width:56px;height:46px;color:var(--mud)}
+.qopt small{font-weight:400;color:var(--muted);font-family:var(--f-mono);font-size:.75rem}
+.qopt:hover{border-color:var(--accent)}
+.qopt.skip{background:none;border-style:dashed;color:var(--muted)}
+.progress{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:0 0 14px;flex-wrap:wrap}
+.trail{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.trail span{font-size:.8rem;background:var(--sunk);border-radius:999px;padding:2px 10px}
+.compare{display:grid;gap:10px;margin-top:14px}
+.compare article{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.compare article p{margin:4px 0 8px;font-size:.92rem}
+
+/* Daftar */
+.filterbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.filterbar input{flex:1;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.fam{margin-bottom:18px}
+.fam h3{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.fam .list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.fam .list .cand:first-child{border-top:0}
+
+/* Lembar detail */
+.sheet-bg{position:fixed;inset:0;background:rgba(10,20,15,.45);z-index:20;display:flex;justify-content:flex-end}
+.sheet{background:var(--surface);width:min(560px,100%);height:100%;overflow:auto;padding:calc(18px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(30px + env(safe-area-inset-bottom,0px)) 20px}
+.sheet h2{font-family:var(--f-sci);font-style:italic;font-weight:600;font-size:1.7rem;margin:6px 0 2px;line-height:1.15}
+.sheet .auth{color:var(--muted);font-size:.9rem}
+.sheet .close{float:right}
+.pembeda{background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;margin:14px 0}
+.status{background:var(--flag);color:var(--flag-ink);border-radius:var(--r);padding:10px 14px;margin:12px 0;font-size:.9rem}
+.photo{border:1px dashed var(--line);border-radius:var(--r);padding:16px;color:var(--muted);font-size:.85rem;text-align:center;margin:12px 0}
+dl.props{display:grid;grid-template-columns:minmax(0,40%) minmax(0,60%);gap:0;margin:0;font-size:.9rem}
+dl.props dt{color:var(--muted);padding:6px 10px 6px 0;border-top:1px solid var(--sunk)}
+dl.props dd{margin:0;padding:6px 0;border-top:1px solid var(--sunk)}
+.flagv{background:var(--flag);color:var(--flag-ink);border-radius:4px;padding:0 4px}
+.flagnote{display:block;font-size:.78rem;color:var(--flag-ink);margin-top:2px}
+.sheet h4{margin:18px 0 4px;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.ref{font-size:.82rem;color:var(--muted);margin-top:18px;border-top:1px solid var(--line);padding-top:10px}
+footer{font-size:.8rem;color:var(--muted);padding-block:10px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.net{font-size:.72rem;border-radius:999px;padding:2px 9px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.net.off{background:var(--flag);color:var(--flag-ink)}
+#install{display:none}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="brand"><b>Kunci Identifikasi Mangrove Sejati</b><span><span id="nsp">…</span> jenis · rujukan Noor dkk. (2006) <span class="net" id="net">siap offline</span></span></div>
+  <button class="btn primary" id="install">Pasang di HP</button>
+  <nav class="tabs" aria-label="Mode">
+    <a href="#centang" data-tab="centang">Centang ciri</a>
+    <a href="#tanya" data-tab="tanya">Tanya-jawab</a>
+    <a href="#daftar" data-tab="daftar">Daftar jenis</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <section id="v-centang" hidden>
+    <div class="grid">
+      <div>
+        <div class="toolbar">
+          <span class="muted" style="margin-right:auto;font-size:.92rem">Pilih ciri yang terlihat. Ciri yang tidak terlihat boleh dilewati.</span>
+          <button class="btn" id="reset">Mulai ulang</button>
+        </div>
+        <div class="hint" id="hint"></div>
+        <div id="organs"></div>
+      </div>
+      <aside class="res" id="results" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section id="v-tanya" hidden><div class="qa" id="qa"></div></section>
+
+  <section id="v-daftar" hidden>
+    <div class="filterbar"><input id="q" type="search" placeholder="Cari nama ilmiah, nama lokal, atau famili" aria-label="Cari jenis"></div>
+    <div id="list"></div>
+  </section>
+  <footer>Versi uji coba. Data ciri dari Noor, Khazali &amp; Suryadiputra, <i>Panduan Pengenalan Mangrove di Indonesia</i> (cetak ulang 2006); daftar mangrove sejati dicocokkan dengan Giesen dkk. (FAO, 2007). Nilai bertanda kuning belum terverifikasi.</footer>
+</main>
+
+<div class="mobilebar" id="mbar"><span><b id="mcount">0</b> <span class="muted">jenis cocok</span></span><button class="btn primary" style="margin-left:auto" id="mgo">Lihat hasil</button></div>
+<div id="sheet" hidden></div>
+
+<script>
+(async function(){
+let D;
+try{ D = await (await fetch('data/mangrove.json')).json(); }
+catch(e){ document.querySelector('main').innerHTML='<p style="padding:24px">Data belum bisa dimuat. Buka halaman ini sekali saat ada sinyal agar tersimpan untuk dipakai offline.</p>'; return; }
+document.getElementById('nsp').textContent = D.sp.length;
+const CH = D.chars, SP = D.sp, FL = D.flags;
+const byK = Object.fromEntries(CH.map(c=>[c.k,c]));
+const CAT = CH.filter(c=>c.vals.length).map(c=>c.k);
+const NUM = ['D_PANJANG','B_PANJANG','B_MAHKOTA','B_KELOPAK','F_UKURAN','H_PANJANG'];
+const CLOSED = {GETAH:'tidak'};            // ciri yang pasti disebut rujukan bila ada
+const SKIPQ = new Set(['D_UJUNGRANTING']); // tidak ditanyakan di mode tanya-jawab
+const ORG = ['Umum','Akar','Batang','Daun','Bunga','Buah','Propagul'];
+const NUMUNIT = {D_PANJANG:'cm',B_PANJANG:'cm',F_UKURAN:'cm',H_PANJANG:'cm',B_MAHKOTA:'helai',B_KELOPAK:'cuping'};
+
+// ---------- ikon SVG (garis, warna mengikuti teks)
+const G='<path d="M2 38H58" stroke-dasharray="2 3" opacity=".6"/>';
+const T='<path d="M30 0V38"/>';
+const ICON = {
+ 'AKAR|tunjang': G+'<path d="M30 0V22M30 12Q17 14 11 38M30 17Q22 21 20 38M30 17Q38 21 40 38M30 12Q43 14 49 38"/>',
+ 'AKAR|lutut': G+T+'<path d="M30 38H58M30 38H2M37 38q3-11 6 0M47 38q3-11 6 0M23 38q-3-11-6 0M13 38q-3-11-6 0"/>',
+ 'AKAR|nafas pensil': G+T+'<path d="M6 38V29M11 38V27M16 38V30M44 38V28M49 38V30M54 38V27M30 38H2M30 38H58" />',
+ 'AKAR|nafas kerucut': G+T+'<path d="M5 38L8 25L11 38M15 38L18 28L21 38M39 38L42 27L45 38M49 38L52 24L55 38"/>',
+ 'AKAR|papan/banir': G+'<path d="M28 0V38M32 0V38M28 18L12 38H28M32 18L48 38H32M28 26L22 38M32 26L38 38"/>',
+ 'AKAR|udara': G+'<path d="M30 8V38M30 16L52 6M30 22L10 13M45 9V30M50 7V24M14 15V32"/>',
+ 'AKAR|menjalar': G+T+'<path d="M30 38C22 33 14 41 3 36M30 38C38 33 46 41 57 36"/>',
+ 'AKAR|tidak khas': G+T+'<path d="M30 38L22 46M30 38L38 46M30 38V47" opacity=".5"/>',
+ 'D_LETAK|berhadapan': '<path d="M30 0V48"/><path d="M30 12Q20 4 8 8Q18 16 30 12ZM30 12Q40 4 52 8Q42 16 30 12ZM30 32Q20 24 8 28Q18 36 30 32ZM30 32Q40 24 52 28Q42 36 30 32Z"/>',
+ 'D_LETAK|tersebar': '<path d="M30 0V48"/><path d="M30 8Q20 0 8 4Q18 12 30 8ZM30 22Q40 14 52 18Q42 26 30 22ZM30 36Q20 28 8 32Q18 40 30 36Z"/>',
+ 'D_LETAK|roset': '<path d="M2 44H58" stroke-dasharray="2 3" opacity=".6"/><path d="M30 44Q22 20 10 4M30 44Q28 18 30 2M30 44Q38 20 50 4M30 44Q16 32 4 24M30 44Q44 32 56 24"/>',
+ 'D_BENTUK|elips': '<path d="M30 4C44 10 44 38 30 44C16 38 16 10 30 4ZM30 4V48"/>',
+ 'D_BENTUK|bulat memanjang': '<path d="M30 3C40 4 41 9 41 14V34C41 39 40 43 30 45C20 43 19 39 19 34V14C19 9 20 4 30 3ZM30 3V48"/>',
+ 'D_BENTUK|bulat telur': '<path d="M30 3C38 10 45 26 42 36C39 44 21 44 18 36C15 26 22 10 30 3ZM30 3V48"/>',
+ 'D_BENTUK|bulat telur terbalik': '<path d="M30 45C38 38 45 22 42 12C39 4 21 4 18 12C15 22 22 38 30 45ZM30 2V48"/>',
+ 'D_BENTUK|lanset': '<path d="M30 2C36 12 37 32 30 46C23 32 24 12 30 2ZM30 2V48"/>',
+ 'D_UJUNG|meruncing': '<path d="M14 46C14 26 24 14 30 2C36 14 46 26 46 46M30 2V46"/>',
+ 'D_UJUNG|membulat': '<path d="M14 46V22C14 4 46 4 46 22V46M30 9V46"/>',
+ 'D_UJUNG|berduri': '<path d="M14 46C14 28 22 16 27 9L30 1L33 9C38 16 46 28 46 46M30 9V46M14 34L9 31M46 34L51 31M17 24L12 20M43 24L48 20"/>',
+ 'F_TIPE|propagul (hipokotil)': '<path d="M24 2H36M27 2Q30 10 30 10Q30 10 33 2"/><path d="M26 10Q30 14 34 10L33 18H27Z"/><path d="M28 18H32L33 40Q30 47 27 40Z"/>',
+ 'F_TIPE|buah berdaging': '<path d="M30 2V10"/><circle cx="30" cy="27" r="15"/><path d="M18 14L24 18M42 14L36 18M14 22L19 22M46 22L41 22"/>',
+ 'F_TIPE|buah berkayu/keras': '<path d="M30 2V8"/><circle cx="30" cy="27" r="18"/><path d="M30 9V45M15 18L45 36M45 18L15 36" opacity=".55"/>',
+ 'F_TIPE|kapsul': '<path d="M30 2V8"/><path d="M30 8C42 12 42 36 30 46C18 36 18 12 30 8Z"/><path d="M30 8V46" opacity=".55"/>',
+};
+function svg(k,v){const p=ICON[k+'|'+v]; return p?`<svg viewBox="0 0 60 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`:'';}
+
+// ---------- logika pencocokan
+const vals = (sp,k)=>{const v=(sp.v[k]||'').trim(); if(!v) return CLOSED[k]?[CLOSED[k]]:(k==='GETAH'&&sp.n.startsWith('Sarcolobus')?[]:[]); return v.split(';').map(s=>s.trim());};
+function valsOf(sp,k){ if(k==='GETAH' && sp.n.startsWith('Sarcolobus') && !(sp.v.GETAH)) return []; return vals(sp,k); }
+function rng(s){ if(!s) return null; s=s.replace(/,/g,'.'); const n=(s.match(/\d+(?:\.\d+)?/g)||[]).map(Number); if(!n.length) return null;
+  let lo=Math.min(...n), hi=Math.max(...n); if(/[≤<]/.test(s)) lo=0; return [lo,hi]; }
+let SEL = {};       // k -> Set nilai (kategori) | angka (numerik)
+let SKIP = new Set(); let HIST = [];
+
+function judge(sp){ // -> {conf, unk, bad:[k]}
+  let conf=0, unk=0, bad=[];
+  for(const k in SEL){
+    const s=SEL[k];
+    if(NUM.includes(k)){ const r=rng(sp.v[k]); if(!r){unk++;continue;}
+      const tol=Math.max(0.15*r[1],0.5); (s>=r[0]-tol && s<=r[1]+tol)?conf++:bad.push(k); continue; }
+    const v=valsOf(sp,k); if(!v.length){unk++;continue;}
+    v.some(x=>s.has(x))?conf++:bad.push(k);
+  }
+  return {conf,unk,bad};
+}
+function classify(){
+  const ok=[],maybe=[],near=[];
+  for(const sp of SP){const j=judge(sp); sp._j=j;
+    if(j.bad.length===0) (j.unk===0?ok:maybe).push(sp); else if(j.bad.length===1) near.push(sp);}
+  const by=(a,b)=>b._j.conf-a._j.conf||a.n.localeCompare(b.n);
+  ok.sort(by); maybe.sort(by); near.sort(by);
+  return {ok,maybe,near,cands:ok.concat(maybe)};
+}
+function bestChars(cands, exclude){
+  const out=[];
+  for(const k of CAT){ if(SEL[k]||exclude.has(k)) continue;
+    const cnt={}; let known=0;
+    for(const sp of cands){const v=valsOf(sp,k); if(!v.length) continue; known++; for(const x of v) cnt[x]=(cnt[x]||0)+1;}
+    if(known<2) continue;
+    const keys=Object.keys(cnt); if(keys.length<2) continue;
+    // nilai terbaik = rata-rata sisa kandidat bila tiap nilai dipilih (lebih kecil lebih baik), dibobot cakupan
+    const unknown=cands.length-known;
+    let exp=0; for(const x of keys){ exp+=(cnt[x]/known)*(cnt[x]+unknown); }
+    const score=(cands.length-exp)/cands.length;
+    if(score>0.05) out.push({k,score,cnt});
+  }
+  return out.sort((a,b)=>b.score-a.score);
+}
+
+// ---------- tampilan: centang ciri
+const $=s=>document.querySelector(s);
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function short(l){const x=(l||'').split(',')[0].trim(); return /^tidak (tahu|diketahui)/i.test(x)?'':x;}
+
+function renderOrgans(){
+  const {cands}=classify();
+  const html=ORG.map(o=>{
+    const cs=CH.filter(c=>c.o===o && (c.vals.length||NUM.includes(c.k)));
+    if(!cs.length) return '';
+    const active=cs.filter(c=>SEL[c.k]!==undefined).length;
+    const open=(o==='Umum'||o==='Akar'||o==='Daun'||active)?' open':'';
+    const body=cs.map(c=>{
+      const ket=c.ket?`<p class="ket" id="ket-${c.k}" hidden>${esc(c.ket)}</p>`:'';
+      const info=c.ket?`<button class="info" data-info="${c.k}" aria-label="Penjelasan ${esc(c.n)}">?</button>`:'';
+      if(NUM.includes(c.k)){
+        const v=SEL[c.k]!==undefined?SEL[c.k]:'';
+        return `<div><div class="char-h"><h3>${esc(c.n)}</h3>${info}</div>${ket}
+          <div class="numrow"><input id="n-${c.k}" type="number" inputmode="decimal" step="0.1" min="0" value="${v}" data-num="${c.k}" aria-label="${esc(c.n)}"> <span class="muted">${NUMUNIT[c.k]||''}</span>
+          ${v!==''?`<button class="btn" data-clear="${c.k}">Hapus</button>`:''}</div></div>`;
+      }
+      const chips=c.vals.map(v=>{
+        const n=cands.filter(sp=>valsOf(sp,c.k).includes(v)).length;
+        const on=SEL[c.k]&&SEL[c.k].has(v);
+        return `<button class="chip${n||on?'':' zero'}" aria-pressed="${!!on}" data-k="${c.k}" data-v="${esc(v)}">${svg(c.k,v)}<span>${esc(v)}</span><span class="n">${n}</span></button>`;
+      }).join('');
+      return `<div><div class="char-h"><h3>${esc(c.n)}</h3>${info}</div>${ket}<div class="chips">${chips}</div></div>`;
+    }).join('');
+    return `<details class="organ"${open} data-o="${o}"><summary>${o}${active?`<span class="count-pill">${active}</span>`:''}</summary><div class="organ-body">${body}</div></details>`;
+  }).join('');
+  const openState={}; document.querySelectorAll('details.organ').forEach(d=>openState[d.dataset.o]=d.open);
+  $('#organs').innerHTML=html;
+  document.querySelectorAll('details.organ').forEach(d=>{ if(d.dataset.o in openState) d.open=openState[d.dataset.o]||d.querySelector('[aria-pressed="true"]')!==null; });
+}
+function renderHint(){
+  const {cands}=classify();
+  const b=bestChars(cands,new Set()).slice(0,3);
+  if(cands.length<=1||!b.length){ $('#hint').innerHTML=cands.length===1?'<span>Tersisa satu jenis. Buka untuk mencocokkan pembedanya.</span>':'<span>Tidak ada ciri lain yang bisa memisahkan kandidat. Bandingkan pembeda di daftar hasil.</span>'; return;}
+  $('#hint').innerHTML='<span><b>Ciri paling membantu sekarang:</b></span>'+b.map(x=>`<button data-jump="${x.k}">${esc(byK[x.k].n)}</button>`).join('');
+}
+function candRow(sp,extra){
+  const st=sp.st?`<span class="tag off">diperdebatkan</span>`:'';
+  return `<button class="cand" data-sp="${esc(sp.n)}"><span class="nm"><i>${esc(sp.n)}</i><small>${esc(short(sp.l)||sp.f)}</small></span>${extra||''}${st}</button>`;
+}
+function renderResults(){
+  const {ok,maybe,near}=classify();
+  const n=ok.length+maybe.length; const any=Object.keys(SEL).length;
+  let h=`<div class="res-head"><div class="eyebrow">Kandidat</div><div><span class="big">${n}</span> <span class="muted">dari ${SP.length} jenis</span></div></div>`;
+  if(!any) h+=`<div class="empty">Belum ada ciri dipilih. Mulailah dari yang paling mudah dilihat: habitus, tipe akar, atau susunan daun.</div>`;
+  if(ok.length) h+=`<div class="res-sec"><h4>Cocok dengan semua ciri</h4>${ok.map(s=>candRow(s)).join('')}</div>`;
+  if(maybe.length) h+=`<div class="res-sec"><h4>Mungkin — sebagian ciri tidak ada di rujukan</h4>${maybe.map(s=>candRow(s,`<span class="tag">${s._j.unk} ?</span>`)).join('')}</div>`;
+  if(any&&!n) h+=`<div class="empty">Tidak ada jenis yang cocok dengan semua pilihan. Periksa lagi satu pilihan, atau lihat jenis yang hanya berbeda satu ciri.</div>`;
+  if(near.length&&any) h+=`<div class="res-sec"><h4>Berbeda satu ciri</h4>${near.slice(0,8).map(s=>candRow(s,`<span class="tag">${esc(byK[s._j.bad[0]].n.split(' (')[0])}</span>`)).join('')}</div>`;
+  $('#results').innerHTML=h; $('#mcount').textContent=n;
+}
+function refresh(){ renderOrgans(); renderHint(); renderResults(); }
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button'); if(!t) return;
+  if(t.dataset.k){ const k=t.dataset.k,v=t.dataset.v; SEL[k]=SEL[k]||new Set(); SEL[k].has(v)?SEL[k].delete(v):SEL[k].add(v); if(!SEL[k].size) delete SEL[k]; refresh(); return;}
+  if(t.dataset.info){ const p=$('#ket-'+t.dataset.info); if(p) p.hidden=!p.hidden; return;}
+  if(t.dataset.clear){ delete SEL[t.dataset.clear]; refresh(); return;}
+  if(t.dataset.jump){ const d=document.querySelector(`details.organ[data-o="${byK[t.dataset.jump].o}"]`); if(d){d.open=true; const el=d.querySelector(`[data-k="${t.dataset.jump}"],[data-num="${t.dataset.jump}"]`); (el||d).scrollIntoView({behavior:'smooth',block:'center'});} return;}
+  if(t.dataset.sp){ openSheet(t.dataset.sp); return;}
+  if(t.id==='reset'){ SEL={}; SKIP=new Set(); HIST=[]; refresh(); renderQA(); return;}
+  if(t.id==='mgo'){ $('#results').scrollIntoView({behavior:'smooth'}); return;}
+  if(t.dataset.qk){ HIST.push({k:t.dataset.qk,prev:SEL[t.dataset.qk],skip:false}); SEL[t.dataset.qk]=new Set([t.dataset.qv]); renderQA(); refresh(); return;}
+  if(t.dataset.qskip){ HIST.push({k:t.dataset.qskip,skip:true}); SKIP.add(t.dataset.qskip); renderQA(); return;}
+  if(t.id==='qback'){ const h=HIST.pop(); if(h){ if(h.skip) SKIP.delete(h.k); else { if(h.prev) SEL[h.k]=h.prev; else delete SEL[h.k]; } } renderQA(); refresh(); return;}
+  if(t.id==='qreset'){ SEL={}; SKIP=new Set(); HIST=[]; renderQA(); refresh(); return;}
+  if(t.classList.contains('close')||t.id==='sclose'){ closeSheet(); return;}
+});
+document.addEventListener('change',e=>{ const k=e.target.dataset&&e.target.dataset.num; if(!k) return;
+  const v=parseFloat(String(e.target.value).replace(',','.')); if(isNaN(v)) delete SEL[k]; else SEL[k]=v; refresh(); });
+
+// ---------- tanya-jawab
+function renderQA(){
+  const {cands}=classify();
+  const ans=HIST.filter(h=>!h.skip).length;
+  const trail=Object.keys(SEL).map(k=>`<span>${esc(byK[k].n)}: <b>${NUM.includes(k)?SEL[k]:[...SEL[k]].join(', ')}</b></span>`).join('');
+  let h=`<div class="progress"><span><span class="sci" style="font-size:1.4rem;font-style:normal;font-weight:600">${cands.length}</span> <span class="muted">kandidat tersisa · ${ans} pertanyaan dijawab</span></span>
+    <span style="display:flex;gap:8px"><button class="btn" id="qback" ${HIST.length?'':'disabled'}>Kembali</button><button class="btn" id="qreset">Mulai ulang</button></span></div>`;
+  const excl=new Set([...SKIP,...SKIPQ]);
+  const b=cands.length>1?bestChars(cands,excl)[0]:null;
+  if(cands.length===0){
+    h+=`<div class="qcard"><div class="eyebrow">Tidak ada yang cocok</div><h2>Jawaban terakhir menyisakan nol jenis.</h2><p class="muted">Tekan Kembali dan coba pilihan lain, atau pilih "Tidak terlihat" bila ragu.</p></div>`;
+  } else if(b){
+    const c=byK[b.k];
+    const opts=Object.keys(b.cnt).sort((x,y)=>c.vals.indexOf(x)-c.vals.indexOf(y)).map(v=>`<button class="qopt" data-qk="${c.k}" data-qv="${esc(v)}">${svg(c.k,v)}<span>${esc(v)}</span><small>${b.cnt[v]} jenis</small></button>`).join('');
+    h+=`<div class="qcard"><div class="eyebrow">${c.o}</div><h2>${esc(c.n)}?</h2>${c.ket?`<p class="ket">${esc(c.ket)}</p>`:''}
+      <div class="qopts">${opts}<button class="qopt skip" data-qskip="${c.k}"><span>Tidak terlihat / ragu</span><small>lewati</small></button></div></div>`;
+  } else {
+    const one=cands.length===1;
+    h+=`<div class="qcard"><div class="eyebrow">${one?'Hasil':'Tidak bisa dipisah lebih jauh dengan ciri berpilihan'}</div>
+      <h2>${one?'Kemungkinan besar:':'Bandingkan pembeda kandidat berikut'}</h2>
+      <div class="compare">${cands.map(sp=>`<article><button class="cand" style="padding:0;border:0" data-sp="${esc(sp.n)}"><span class="nm"><i>${esc(sp.n)}</i><small>${esc(short(sp.l)||sp.f)}</small></span></button><p>${esc(sp.v.PEMBEDA||'')}</p></article>`).join('')}</div></div>`;
+  }
+  if(trail) h+=`<div class="trail">${trail}</div>`;
+  $('#qa').innerHTML=h;
+}
+
+// ---------- daftar
+function renderList(){
+  const q=($('#q').value||'').toLowerCase().trim();
+  const fams={};
+  for(const sp of SP){ if(q && !(sp.n+' '+sp.l+' '+sp.f).toLowerCase().includes(q)) continue; (fams[sp.f]=fams[sp.f]||[]).push(sp); }
+  const keys=Object.keys(fams).sort();
+  $('#list').innerHTML=keys.length?keys.map(f=>`<div class="fam"><h3>${esc(f)} · ${fams[f].length}</h3><div class="list">${fams[f].map(s=>candRow(s)).join('')}</div></div>`).join(''):'<p class="muted">Tidak ada jenis yang cocok dengan pencarian.</p>';
+}
+$('#q').addEventListener('input',renderList);
+
+// ---------- lembar detail
+function openSheet(name){
+  const sp=SP.find(s=>s.n===name); if(!sp) return;
+  const groups=ORG.map(o=>{
+    const rows=CH.filter(c=>c.o===o && c.k!=='PEMBEDA' && sp.v[c.k]).map(c=>{
+      const f=FL[sp.n+'|'+c.k]; const val=esc(sp.v[c.k])+(NUMUNIT[c.k]&&/\d/.test(sp.v[c.k])&&c.k!=='B_MAHKOTA'&&c.k!=='B_KELOPAK'?' '+NUMUNIT[c.k]:'')+(c.k==='TINGGI'?' m':'');
+      return `<dt>${esc(c.n)}</dt><dd>${f?`<span class="flagv">${val}</span><span class="flagnote">Perlu verifikasi: ${esc(f)}</span>`:val}</dd>`;
+    }).join('');
+    return rows?`<h4>${o}</h4><dl class="props">${rows}</dl>`:'';
+  }).join('');
+  $('#sheet').innerHTML=`<div class="sheet-bg" id="sbg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(sp.n)}">
+    <button class="btn close" id="sclose">Tutup</button>
+    <div class="eyebrow">${esc(sp.f)}</div><h2>${esc(sp.n)}</h2><div class="auth">${esc(sp.a)}</div>
+    ${sp.st?`<div class="status"><b>Status diperdebatkan.</b> ${esc(sp.tn)}</div>`:''}
+    
+    <p style="margin:12px 0 0"><span class="muted">Nama lokal:</span> ${esc(sp.l||'tidak diketahui')}</p>
+    ${sp.v.PEMBEDA?`<div class="pembeda"><div class="eyebrow">Pembeda utama</div>${esc(sp.v.PEMBEDA)}</div>`:''}
+    <div class="photo">Belum ada foto. Foto lapangan akan ditambahkan.</div>
+    ${groups}
+    ${!sp.st&&sp.tn?`<p class="ref">Tata nama: ${esc(sp.tn)}</p>`:''}
+    <p class="ref">Rujukan: Noor dkk. (2006), hal. ${sp.p}.</p>
+  </div></div>`;
+  $('#sheet').hidden=false;
+  $('#sbg').addEventListener('click',e=>{ if(e.target.id==='sbg') closeSheet(); });
+  $('#sclose').focus();
+}
+function closeSheet(){ $('#sheet').hidden=true; $('#sheet').innerHTML=''; }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !$('#sheet').hidden) closeSheet(); });
+
+// ---------- routing
+function route(){
+  const t=(location.hash||'#centang').slice(1); const tab=['centang','tanya','daftar'].includes(t)?t:'centang';
+  for(const x of ['centang','tanya','daftar']) $('#v-'+x).hidden=(x!==tab);
+  document.querySelectorAll('nav.tabs a').forEach(a=>a.setAttribute('aria-current',a.dataset.tab===tab?'page':'false'));
+  $('#mbar').style.visibility=tab==='centang'?'visible':'hidden';
+  if(tab==='tanya') renderQA(); if(tab==='daftar') renderList(); if(tab==='centang') refresh();
+}
+window.addEventListener('hashchange',route);
+route();
+
+// ---------- offline & pemasangan
+const net=$('#net');
+function netState(){ const on=navigator.onLine; net.textContent=on?(navigator.serviceWorker&&navigator.serviceWorker.controller?'siap offline':'online'):'offline'; net.classList.toggle('off',!on); }
+addEventListener('online',netState); addEventListener('offline',netState);
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready).then(netState).catch(()=>{}); navigator.serviceWorker.addEventListener('controllerchange',netState); }
+netState();
+let deferred=null;
+addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferred=e; $('#install').style.display='inline-block'; });
+$('#install').addEventListener('click',async()=>{ if(!deferred) return; deferred.prompt(); await deferred.userChoice; deferred=null; $('#install').style.display='none'; });
+})();
+</script>
+</body>
+</html>
